@@ -1,0 +1,681 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Major Planner v6</title>
+<style>
+:root{--crimson:#790030;--crimson-deep:#5e0025;--paper:#FFFDFC;--point:#D9C8B4;--text:#2A1B22;--muted:#6E5A63;--line:#E7DDD3;--shadow:0 18px 45px rgba(121,0,48,.12);--chip:#f9f4ef;--soft:#f7efe8}
+*{box-sizing:border-box} html,body{margin:0;padding:0;font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;background:linear-gradient(180deg,#fbf7f2 0%, #f7f1eb 100%);color:var(--text)}
+button,input,select{font:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:280px 1fr}
+.sidebar{background:linear-gradient(180deg,var(--crimson) 0%, var(--crimson-deep) 100%);color:#fff;padding:28px 22px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{padding:18px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(255,255,255,.06);margin-bottom:18px}
+.logo{width:52px;height:52px;border-radius:16px;background:var(--point);color:var(--crimson);display:grid;place-items:center;font-weight:800;font-size:22px;margin-bottom:14px}
+.brand h1{margin:0;font-size:22px;line-height:1.15}.brand p{margin:8px 0 0;color:rgba(255,255,255,.78);font-size:13px;line-height:1.5}
+.student-box{margin-bottom:16px;padding:14px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.student-box .label{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px}.student-box .value{font-size:18px;font-weight:800}
+.nav{display:grid;gap:10px}.nav button{width:100%;border:none;cursor:pointer;text-align:left;color:#fff;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.nav button.active,.nav button:hover{background:rgba(217,200,180,.22)}
+.side-note{margin-top:20px;padding:16px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font-size:13px;line-height:1.6;color:rgba(255,255,255,.84)}
+.main{padding:28px}.page{display:none}.page.active{display:block}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;margin-bottom:22px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:28px;padding:26px;box-shadow:var(--shadow)}
+.kicker{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(121,0,48,.08);color:var(--crimson);font-weight:700;font-size:13px}
+.headline{margin:14px 0 12px;font-size:40px;line-height:1.12;letter-spacing:-.03em}.sub{margin:0;color:var(--muted);line-height:1.75;font-size:15px}
+.button-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.btn{border:none;cursor:pointer;border-radius:16px;padding:14px 18px;font-weight:700}
+.btn-primary{background:var(--crimson);color:#fff}.btn-secondary{background:var(--point);color:var(--crimson)}.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--text)}.btn-danger{background:#fff2f5;color:var(--crimson);border:1px solid #f0cad7}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.mini{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}.mini .label{font-size:12px;color:var(--muted);margin-bottom:6px}.mini strong{font-size:24px;color:var(--crimson)}
+.section-title{font-size:26px;margin:0 0 14px;letter-spacing:-.02em}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px}.field{margin-bottom:18px}
+.field label{display:block;margin-bottom:10px;font-weight:800}.help{font-size:12px;color:var(--muted);margin-top:-4px;margin-bottom:8px}
+select,input[type=text]{width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:#fff;outline:none}
+.options{display:flex;gap:10px;flex-wrap:wrap}.options label{position:relative;cursor:pointer}.options input{position:absolute;opacity:0;pointer-events:none}
+.chip{display:inline-flex;align-items:center;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:14px}
+.options input:checked + .chip{background:rgba(121,0,48,.10);color:var(--crimson);border-color:rgba(121,0,48,.22);font-weight:700}
+.flow-box{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.flow-step{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:18px}
+.flow-step .num{width:34px;height:34px;border-radius:999px;background:var(--crimson);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:12px}.flow-step h3{margin:0 0 8px;font-size:18px}.flow-step p{margin:0;color:var(--muted);font-size:14px;line-height:1.65}
+.profile-layout{display:grid;grid-template-columns:1fr 1fr;gap:22px}.saved-list,.catalog-list,.recommendation-list,.swap-list{display:grid;gap:12px;margin-top:14px}
+.saved-item,.catalog-item,.combo-card,.swap-card{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line)}
+.saved-item h4,.catalog-item h4,.combo-card h4,.swap-card h4{margin:0 0 4px;font-size:16px}.saved-item p,.catalog-item p,.combo-card p,.swap-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.empty{margin-top:14px;padding:20px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);text-align:center;background:#fff}.preference-list{display:grid;gap:12px;margin-top:12px}
+.pref-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.pref-row span{color:var(--muted)}.pref-row strong{color:var(--crimson)}
+.gate-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg, rgba(121,0,48,.96), rgba(94,0,37,.96))}.gate-card{width:min(560px, 100%);background:rgba(255,255,255,.96);border-radius:32px;padding:34px;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.gate-title{font-size:34px;line-height:1.15;margin:14px 0 10px;letter-spacing:-.03em}.gate-sub{margin:0;color:var(--muted);line-height:1.75}.gate-badge{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(121,0,48,.08);color:var(--crimson);font-weight:700;font-size:13px}
+.catalog-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.tiny{display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(121,0,48,.08);color:var(--crimson);font-size:12px;font-weight:700;margin-top:8px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.meta-badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;color:var(--text)}
+.status-high{background:#f7efe8;color:var(--crimson);border:1px solid #e6d1c3}.status-low{background:#f6f6f6;color:#6b6466;border:1px solid #e5e0e2}
+.footer-note{margin-top:18px;color:var(--muted);font-size:12px;line-height:1.7}
+.combo-score{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--soft);color:var(--crimson);font-size:12px;font-weight:700}
+.combo-courses{display:grid;gap:10px;margin-top:12px}
+.course-line{padding:12px;border-radius:14px;background:#fcfaf8;border:1px solid var(--line)}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.swap-panel{margin-top:22px}
+.swap-inline{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+@media (max-width: 1080px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:static}.hero,.two-col,.profile-layout,.flow-box,.mini-grid,.summary-grid{grid-template-columns:1fr}.headline{font-size:32px}.main{padding:18px}}
+</style>
+</head>
+<body>
+<div id="gateView" class="gate-wrap">
+  <div class="gate-card">
+    <span class="gate-badge">Student ID Start</span>
+    <h1 class="gate-title">학번으로 시작하는<br>영문과 전공 플래너</h1>
+    <p class="gate-sub">학번을 기준으로 이미 들은 과목과 선호 정보를 마이페이지에 저장한다.</p>
+    <div class="field" style="margin-top:22px"><label for="studentIdInput">학번 입력</label><input id="studentIdInput" type="text" placeholder="예: 20231234"></div>
+    <div class="button-row"><button class="btn btn-primary" id="enterBtn">시작하기</button></div>
+    <div class="footer-note">이번 6차 버전은 추천 조합에서 특정 과목을 다른 과목으로 교체할 수 있다.</div>
+  </div>
+</div>
+
+<div id="appView" class="app" style="display:none">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">E</div><h1>English Major<br>Planner</h1><p>교체 기능 v6</p></div>
+    <div class="student-box"><div class="label">현재 사용자</div><div class="value" id="studentDisplay">-</div></div>
+    <div class="nav">
+      <button class="nav-btn active" data-page="home">홈</button>
+      <button class="nav-btn" data-page="survey">시작 설문</button>
+      <button class="nav-btn" data-page="results">추천 결과</button>
+      <button class="nav-btn" data-page="catalog">과목 목록</button>
+      <button class="nav-btn" data-page="mypage">마이페이지</button>
+    </div>
+    <div class="side-note">
+      이번 버전은 추천된 조합에서 마음에 안 드는 과목 하나를
+      <strong>비슷한 학점의 다른 과목으로 교체</strong>할 수 있다.
+    </div>
+    <div class="button-row"><button class="btn btn-secondary" id="changeStudentBtn" style="width:100%">학번 바꾸기</button></div>
+  </aside>
+
+  <main class="main">
+    <section class="page active" id="home">
+      <div class="hero">
+        <div class="card">
+          <span class="kicker">English Major Course Planner</span>
+          <h2 class="headline">추천받고 끝이 아니라,<br>마음에 안 들면 바꾼다.</h2>
+          <p class="sub">
+            이제 추천 조합이 나온 뒤 특정 과목을 다른 과목으로 교체할 수 있다.
+            그래서 전체 시간표를 처음부터 다시 만들지 않아도 된다. 이게 진짜 서비스다운 부분이다.
+          </p>
+          <div class="button-row">
+            <button class="btn btn-primary" id="startNow">추천 시작하기</button>
+            <button class="btn btn-secondary" id="openResults">추천 결과 보기</button>
+          </div>
+          <div class="mini-grid">
+            <div class="mini"><div class="label">추천 조합</div><strong>3안</strong></div>
+            <div class="mini"><div class="label">교체 기능</div><strong>추가</strong></div>
+            <div class="mini"><div class="label">사용 방식</div><strong>한 과목만 교체</strong></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 class="section-title">이번에 추가된 핵심</h3>
+          <p class="sub">
+            추천 결과 아래에 교체 패널이 생겼다. 선택한 조합에서 특정 과목을 고르면,
+            비슷한 학점과 가까운 성격의 대체 과목을 보여준다.
+          </p>
+          <div class="footer-note">
+            다음 단계는 여기에 <strong>시간표 시각화</strong>나 <strong>저장한 추천 조합</strong> 기능을 붙이는 것.
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-step"><div class="num">1</div><h3>설문 입력</h3><p>학점, 분야, 난이도, 회피 스타일을 입력한다.</p></div>
+        <div class="flow-step"><div class="num">2</div><h3>조합 추천</h3><p>조건에 맞는 전공 조합 3개를 만든다.</p></div>
+        <div class="flow-step"><div class="num">3</div><h3>한 과목 교체</h3><p>추천 조합에서 마음에 안 드는 수업만 다른 과목으로 바꾼다.</p></div>
+      </div>
+    </section>
+
+    <section class="page" id="survey">
+      <div class="card" style="margin-bottom:22px"><h2 class="section-title">추천 시작 설문</h2><p class="sub">입력값을 바탕으로 추천 결과와 교체 후보가 계산된다.</p></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="field"><label>1. 이번 학기에 채워야 하는 영문 전공 학점은?</label><div class="options">
+            <label><input type="radio" name="credits" value="3"><span class="chip">3학점</span></label>
+            <label><input type="radio" name="credits" value="6"><span class="chip">6학점</span></label>
+            <label><input type="radio" name="credits" value="9" checked><span class="chip">9학점</span></label>
+            <label><input type="radio" name="credits" value="12"><span class="chip">12학점 이상</span></label>
+          </div></div>
+          <div class="field"><label>2. 현재 학년은?</label><div class="options">
+            <label><input type="radio" name="grade" value="1"><span class="chip">1학년</span></label>
+            <label><input type="radio" name="grade" value="2" checked><span class="chip">2학년</span></label>
+            <label><input type="radio" name="grade" value="3"><span class="chip">3학년</span></label>
+            <label><input type="radio" name="grade" value="4"><span class="chip">4학년+</span></label>
+          </div></div>
+          <div class="field"><label>3. 더 듣고 싶은 분야는?</label><div class="help">복수 선택 가능</div><div class="options">
+            <label><input type="checkbox" name="interest" value="영미문학" checked><span class="chip">영미문학</span></label>
+            <label><input type="checkbox" name="interest" value="영어학"><span class="chip">영어학</span></label>
+            <label><input type="checkbox" name="interest" value="영작/쓰기"><span class="chip">영작/쓰기</span></label>
+            <label><input type="checkbox" name="interest" value="영어교육"><span class="chip">영어교육</span></label>
+          </div></div>
+          <div class="field"><label>4. 이번 학기 목표는?</label><div class="options">
+            <label><input type="radio" name="goal" value="학점 방어" checked><span class="chip">학점 방어</span></label>
+            <label><input type="radio" name="goal" value="널널하게"><span class="chip">널널하게 버티기</span></label>
+            <label><input type="radio" name="goal" value="전공 탐색"><span class="chip">관심 분야 탐색</span></label>
+            <label><input type="radio" name="goal" value="전공 심화"><span class="chip">전공 심화</span></label>
+          </div></div>
+        </div>
+        <div class="card">
+          <div class="field"><label>5. 원하는 전공 난이도는?</label><div class="options">
+            <label><input type="radio" name="difficulty" value="easy"><span class="chip">최대한 널널하게</span></label>
+            <label><input type="radio" name="difficulty" value="balanced" checked><span class="chip">적당히 균형 있게</span></label>
+            <label><input type="radio" name="difficulty" value="hard"><span class="chip">조금 빡세도 괜찮음</span></label>
+            <label><input type="radio" name="difficulty" value="challenge"><span class="chip">도전적으로</span></label>
+          </div></div>
+          <div class="field"><label>6. 피하고 싶은 수업 스타일은?</label><div class="help">복수 선택 가능</div><div class="options">
+            <label><input type="checkbox" name="avoid" value="발표"><span class="chip">발표 많은 수업</span></label>
+            <label><input type="checkbox" name="avoid" value="팀플"><span class="chip">팀플 있는 수업</span></label>
+            <label><input type="checkbox" name="avoid" value="과제폭탄"><span class="chip">과제 많은 수업</span></label>
+            <label><input type="checkbox" name="avoid" value="시험어려움"><span class="chip">시험 어려운 수업</span></label>
+          </div></div>
+          <div class="field"><label>7. 선호하는 수업 스타일은?</label><div class="help">복수 선택 가능</div><div class="options">
+            <label><input type="checkbox" name="prefer" value="설명 체계적" checked><span class="chip">설명 체계적</span></label>
+            <label><input type="checkbox" name="prefer" value="시험형"><span class="chip">시험 위주</span></label>
+            <label><input type="checkbox" name="prefer" value="과제형"><span class="chip">과제 위주</span></label>
+            <label><input type="checkbox" name="prefer" value="실용성"><span class="chip">실용적인 수업</span></label>
+          </div></div>
+          <div class="field"><label>8. 원하는 수업 시간대는?</label><div class="options">
+            <label><input type="radio" name="time" value="오전"><span class="chip">오전도 가능</span></label>
+            <label><input type="radio" name="time" value="오후" checked><span class="chip">오후 선호</span></label>
+            <label><input type="radio" name="time" value="늦은 수업"><span class="chip">늦은 수업 가능</span></label>
+            <label><input type="radio" name="time" value="상관없음"><span class="chip">상관없음</span></label>
+          </div></div>
+          <div class="button-row">
+            <button class="btn btn-primary" id="generateRecommendationsBtn">추천 결과 만들기</button>
+            <button class="btn btn-ghost" id="savePreferenceBtn">선호 저장하기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="results">
+      <div class="card" style="margin-bottom:22px">
+        <h2 class="section-title">추천 결과</h2>
+        <p class="sub">입력한 조건을 기준으로 생성된 전공 조합 3안이다. 각 조합에서 한 과목씩 교체해볼 수 있다.</p>
+      </div>
+      <div class="summary-grid">
+        <div class="card">
+          <h3 class="section-title" style="font-size:22px">설문 요약</h3>
+          <div id="resultPrefs" class="preference-list"></div>
+        </div>
+        <div class="card">
+          <h3 class="section-title" style="font-size:22px">교체 안내</h3>
+          <p class="sub">조합 아래의 “이 과목 교체” 버튼을 누르면 같은 학점의 다른 후보를 보여준다. 완전히 처음부터 다시 짜는 것보다 훨씬 현실적이다.</p>
+        </div>
+      </div>
+      <div class="recommendation-list" id="recommendationList"></div>
+      <div class="card swap-panel">
+        <h3 class="section-title" style="font-size:22px">과목 교체 패널</h3>
+        <p class="sub" id="swapStatus">먼저 추천 결과에서 교체할 과목을 골라줘.</p>
+        <div class="swap-list" id="swapList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="catalog">
+      <div class="card" style="margin-bottom:22px">
+        <h2 class="section-title">과목 목록 · 강의평 반영판</h2>
+        <p class="sub">후기 데이터가 있는 과목은 체감 난이도와 과제/시험/발표 태그를 같이 보여준다. 후기 없는 과목은 강의계획서 기반으로 표시된다.</p>
+      </div>
+      <div class="card">
+        <div class="catalog-toolbar">
+          <select id="fieldFilter">
+            <option value="all">전체 분야</option>
+            <option value="영미문학">영미문학</option>
+            <option value="영어학">영어학</option>
+            <option value="영작/쓰기">영작/쓰기</option>
+            <option value="영어교육">영어교육</option>
+            <option value="영미문학/문화">영미문학/문화</option>
+            <option value="영미문학/영화">영미문학/영화</option>
+            <option value="영미문학/융합">영미문학/융합</option>
+            <option value="응용언어학">응용언어학</option>
+            <option value="비평이론">비평이론</option>
+          </select>
+          <select id="confidenceFilter">
+            <option value="all">데이터 신뢰도 전체</option>
+            <option value="high">강의평 충분</option>
+            <option value="medium">강의평 일부</option>
+            <option value="low">강의평 부족</option>
+          </select>
+        </div>
+        <div class="catalog-list" id="catalogList"></div>
+      </div>
+    </section>
+
+    <section class="page" id="mypage">
+      <div class="card" style="margin-bottom:22px"><h2 class="section-title">마이페이지</h2><p class="sub">현재 학번 기준으로 이미 들은 과목과 저장된 선호를 관리한다.</p></div>
+      <div class="profile-layout">
+        <div class="card">
+          <h3 class="section-title" style="font-size:22px">이미 들은 과목 등록</h3>
+          <div class="field"><label>과목명</label><select id="courseSelect"></select></div>
+          <div class="field"><label>이수 학기</label><select id="semesterSelect"><option>2024-1</option><option>2024-2</option><option>2025-1</option><option selected>2025-2</option></select></div>
+          <div class="button-row"><button class="btn btn-primary" id="addCourseBtn">수강 이력 추가</button></div>
+          <div id="savedCoursesArea"></div>
+        </div>
+        <div class="card">
+          <h3 class="section-title" style="font-size:22px">저장된 선호 요약</h3>
+          <div class="preference-list" id="savedPrefsArea"></div>
+          <div class="footer-note">다음 단계에서는 추천 조합 저장이나 시간표 시각화를 붙이면 된다.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const courseCatalog = [{"code": "ENGL200", "name": "영미문학개론(영강)", "prof": "안선영", "credits": 3, "schedule": "월(1), 수(1)", "room": "서관 314B호", "field": "영미문학", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "영문과 입문자가 듣기 좋은 문학 기초 수업이지만, 발표 부담은 분명한 과목.", "difficulty": "낮음~보통", "workload": "적음", "exam": "중간/기말", "exam_diff": "쉬움~보통", "presentation": "많음", "team": "없음", "attendance": "실질 출석 중요", "style": "학생 발표·토론 중심", "pros": "입문용으로 좋고, 시험이 비교적 예측 가능하며 학점 만족도가 높음.", "cons": "매 수업 발표 부담이 큼. 영강 발표가 부담될 수 있음.", "tags": ["입문용", "발표중심", "토론형", "과제적음", "채점후함"]}, {"code": "ENGL211", "name": "영어학개론(영강)", "prof": "이진형", "credits": 3, "schedule": "월(4), 수(4)", "room": "교양관 409호", "field": "영어학", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "영어학 기초를 가장 안정적으로 쌓기 좋은 입문 수업. 출석과 꾸준한 복습이 중요함.", "difficulty": "보통", "workload": "적음~보통", "exam": "기말 1회", "exam_diff": "보통", "presentation": "적음~보통", "team": "거의 없음", "attendance": "엄격함", "style": "이론 강의 + 가벼운 조별활동", "pros": "교수 평판이 매우 좋고, 과제 부담이 크지 않으며 학점 만족도가 높음.", "cons": "출석이 중요하고, 기말 한 번이라 범위 부담이 있음.", "tags": ["영어학입문", "강의력좋음", "출석중요", "기말집중형", "복습노트", "학점잘줌"]}, {"code": "ENGL238", "name": "영어음성학", "prof": "남호성", "credits": 3, "schedule": "금(5-6)", "room": "교육관 504호", "field": "영어학/융합", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "학점은 잘 주는 편이지만 전통적인 음성학보다 AI·코딩 비중이 커서 호불호가 갈리는 과목.", "difficulty": "보통~호불호 큼", "workload": "적음", "exam": "중간/기말", "exam_diff": "보통", "presentation": "거의 없음", "team": "없음", "attendance": "보통~엄격", "style": "AI·머신러닝·실습 중심", "pros": "과제 부담이 적고 학점이 후함. 흥미를 느끼면 재밌게 들을 수 있음.", "cons": "전통적 음성학 기대와 다를 수 있고, 코딩/AI에 흥미 없으면 어렵게 느껴질 수 있음.", "tags": ["AI", "코딩", "학점후함", "호불호", "융합형"]}, {"code": "ENGL281", "name": "영미문학과대중문화", "prof": "조경진", "credits": 3, "schedule": "화(3), 목(3)", "room": "법학관구관 206호", "field": "영미문학/문화", "basis": "강의계획서+강의평", "review_confidence": "medium", "summary": "뮤지컬과 미국 대중문화를 좋아하면 흥미롭지만 발표와 토론 참여 비중이 큰 수업.", "difficulty": "보통", "workload": "보통", "exam": "중간/기말", "exam_diff": "보통", "presentation": "많음", "team": "발표 비중 큼", "attendance": "보통", "style": "발표·토론 중심", "pros": "수업 주제가 흥미롭고 교수의 열정이 느껴짐.", "cons": "자료 업데이트가 불규칙하다는 후기 있음. 발표 부담 존재.", "tags": ["뮤지컬", "대중문화", "발표", "토론", "영강"]}, {"code": "ENGL310-01", "name": "전공영문글쓰기(영강) 01", "prof": "Peter N. McAuley", "credits": 3, "schedule": "월(6), 수(6)", "room": "서관 225호", "field": "영작/쓰기", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "명강이라는 평이 많지만 절대 편한 수업은 아니며, 글쓰기 실력을 키우고 싶은 학생에게 적합함.", "difficulty": "높음", "workload": "많음", "exam": "에세이/리서치페이퍼", "exam_diff": "높음", "presentation": "약간 있음", "team": "적음", "attendance": "엄격", "style": "초안 제출·수정·피드백 중심", "pros": "글쓰기와 리서치 역량을 키우기에 좋고 피드백이 매우 좋음.", "cons": "과제량이 많고 주제 잡기와 글쓰기 난도가 높음.", "tags": ["명강", "글쓰기", "리서치페이퍼", "과제많음", "피드백좋음"]}, {"code": "ENGL310-02", "name": "전공영문글쓰기(영강) 02", "prof": "Kathleen Lee", "credits": 3, "schedule": "화(4), 목(4)", "room": "국제관 307B호", "field": "영작/쓰기", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "시험형 수업은 아니지만 퀴즈·과제·토론이 많아 꾸준히 따라가는 학생에게 유리한 수업.", "difficulty": "보통~높음", "workload": "많음", "exam": "시험 없음, 과제/퀴즈 중심", "exam_diff": "해당 없음", "presentation": "보통", "team": "조별 토론 많음", "attendance": "엄격", "style": "성실함과 참여를 중시", "pros": "작문 전체를 체계적으로 배울 수 있고 얻어가는 것이 많음.", "cons": "퀴즈와 과제가 잦고 출석 및 참여를 엄격하게 봄.", "tags": ["작문", "퀴즈많음", "과제많음", "성실형", "출석엄격"]}, {"code": "ENGL327", "name": "영미문학과영화(영강)", "prof": "Peter N. McAuley", "credits": 3, "schedule": "금(3-4)", "room": "서관 225호", "field": "영미문학/영화", "basis": "강의계획서+강의평", "review_confidence": "medium", "summary": "수업 자체는 흥미롭지만 에세이 평가 방식이 맞는 학생에게 더 잘 맞는 과목.", "difficulty": "보통", "workload": "보통~많음", "exam": "에세이형 중간/기말", "exam_diff": "보통", "presentation": "낮음", "team": "낮음", "attendance": "보통", "style": "문학 원작과 영화 각색 비교", "pros": "영화와 문학을 함께 다뤄 흥미롭고 교수도 친절함.", "cons": "에세이형 평가가 불편한 학생에게는 부담이 큼.", "tags": ["문학과영화", "에세이형", "각색", "흥미로움"]}, {"code": "ENGL329", "name": "영어의사회언어학", "prof": "장민환", "credits": 3, "schedule": "화(2), 목(2)", "room": "국제관 210호", "field": "영어학", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "내용은 흥미로울 수 있지만 워크로드와 팀발표 부담이 커서 호불호가 강한 과목.", "difficulty": "높음", "workload": "많음", "exam": "퀴즈 + 중간대체과제 + 발표 + 기말", "exam_diff": "보통~어려움", "presentation": "많음", "team": "많음", "attendance": "엄격", "style": "연구형 발표와 과제 포함", "pros": "학점은 기대 이상으로 나오는 편.", "cons": "팀플 발표 부담이 매우 크고, 범위나 요구사항 안내가 모호하다는 불만이 많음.", "tags": ["워크로드높음", "팀플", "발표", "학점미화", "호불호"]}, {"code": "ENGL333", "name": "현대미국소설", "prof": "신혜원", "credits": 3, "schedule": "월(4), 수(4)", "room": "교양관 108호", "field": "영미문학", "basis": "강의계획서+강의평", "review_confidence": "high", "summary": "읽기량은 적지 않지만 전반적으로 무난하고 배워가는 것이 많은 현대미국소설 수업.", "difficulty": "보통", "workload": "보통~많음", "exam": "중간/기말 + 퀴즈 + 발표", "exam_diff": "보통", "presentation": "있음", "team": "낮음", "attendance": "보통", "style": "소설 4권을 읽는 정통 문학 수업", "pros": "강의력이 좋고 시험 대비가 가능하며 학점 만족도가 높음.", "cons": "소설 4권 중 일부는 난도가 높음.", "tags": ["현대미국소설", "읽기량많음", "무난함", "시험+퀴즈"]}, {"code": "ENGL335", "name": "영미시연구(영강)", "prof": "장성현", "credits": 3, "schedule": "화(4), 목(4)", "room": "교양관 110호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "주제별로 영미시를 읽으며 구조·이미지·리듬을 분석하는 수업. 그룹 발표와 퀴즈가 포함됨.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "중간/기말 + 퀴즈 + 발표", "exam_diff": "정보 부족", "presentation": "있음", "team": "있음", "attendance": "중요", "style": "시 분석 중심", "pros": "시를 주제별로 깊게 읽을 수 있음.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "강의계획서기반", "시분석"]}, {"code": "ENGL359", "name": "19세기영국소설", "prof": "김동욱", "credits": 3, "schedule": "월(4), 수(4)", "room": "교양관 304호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "하디의 『테스』를 중심으로 19세기 영국소설의 pictorial writing을 깊게 읽는 수업.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "기말 중심 추정", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "정보 부족", "style": "깊이 있는 텍스트 분석", "pros": "심화된 문학 분석 가능.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "강의계획서기반", "심화문학"]}, {"code": "ENGL361", "name": "영어발달사", "prof": "윤혜빈", "credits": 3, "schedule": "금(5-6)", "room": "교육관 506호", "field": "영어학", "basis": "강의목록", "review_confidence": "low", "summary": "영어의 역사적 변화와 발달 과정을 다루는 과목.", "difficulty": "정보 부족", "workload": "정보 부족", "exam": "정보 부족", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "정보 부족", "style": "정보 부족", "pros": "기초 정보만 확보됨.", "cons": "강의계획서/강의평 보강 필요.", "tags": ["데이터부족"]}, {"code": "ENGL375", "name": "비평이론(영강)", "prof": "김서현", "credits": 3, "schedule": "화(1), 목(1)", "room": "교양관 304호", "field": "비평이론", "basis": "강의계획서", "review_confidence": "low", "summary": "주요 비평이론을 배우고 사회 구조와 규범을 비판적으로 읽는 법을 익히는 수업.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "중간/기말 + 리뷰 + 발표", "exam_diff": "정보 부족", "presentation": "있음", "team": "낮음", "attendance": "중요", "style": "이론 중심", "pros": "비평이론 전반을 체계적으로 접할 수 있음.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "이론중심"]}, {"code": "ENGL383", "name": "영국희곡", "prof": "전준택", "credits": 3, "schedule": "화(6), 목(6)", "room": "서관 225호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "중세부터 현대까지 영국 희곡의 흐름을 살피는 과목. 팀프로젝트와 시험 비중이 큼.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "시험 2회 + 팀프로젝트", "exam_diff": "정보 부족", "presentation": "보통", "team": "있음", "attendance": "중요", "style": "시대 흐름 개관", "pros": "영국 희곡사를 넓게 볼 수 있음.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "팀프로젝트"]}, {"code": "ENGL387", "name": "미국산문(영강)", "prof": "이정수", "credits": 3, "schedule": "월(3), 수(3)", "room": "정경관 101호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "미국 산문을 통해 미국적 정체성과 자아를 읽는 수업. discussion post와 시험 중심.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "중간/기말 + discussion posts", "exam_diff": "정보 부족", "presentation": "낮음", "team": "없음", "attendance": "보통", "style": "정체성·산문 분석", "pros": "미국 산문을 주제의식 중심으로 읽을 수 있음.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "discussion post"]}, {"code": "ENGL399", "name": "영어학연구", "prof": "김정석", "credits": 3, "schedule": "월(5), 수(5)", "room": "서관 401호", "field": "영어학", "basis": "강의계획서", "review_confidence": "low", "summary": "생략·초점 등 영어와 한국어의 언어 현상을 분석하는 고급 영어학 과목.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "중간/기말 + 참여", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "보통", "style": "고급 분석형", "pros": "영어학 심화에 적합.", "cons": "영어학개론 수강 전제, 후기 데이터 부족.", "tags": ["강의평부족", "고급영어학"]}, {"code": "ENGL419", "name": "영미문학과젠더", "prof": "윤조원", "credits": 3, "schedule": "월(5), 수(5)", "room": "서관 316B호", "field": "영미문학/젠더", "basis": "강의목록", "review_confidence": "low", "summary": "젠더 관점에서 영미문학을 읽는 전공 과목.", "difficulty": "정보 부족", "workload": "정보 부족", "exam": "정보 부족", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "정보 부족", "style": "정보 부족", "pros": "주제 자체는 분명함.", "cons": "강의계획서/강의평 보강 필요.", "tags": ["데이터부족"]}, {"code": "ENGL421", "name": "영미문학특수과제Ⅰ(영강)", "prof": "Peter N. McAuley", "credits": 3, "schedule": "화(2), 목(2)", "room": "서관 225호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "Irish Literary Revival을 중심으로 문학·정치·민족주의의 관계를 읽는 특수과제 과목.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "중간/기말 + 퀴즈", "exam_diff": "정보 부족", "presentation": "낮음", "team": "낮음", "attendance": "중요", "style": "역사·정치 맥락 읽기", "pros": "문학과 민족주의의 관계를 깊게 볼 수 있음.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "irish literature"]}, {"code": "ENGL422", "name": "영미문학특수과제Ⅱ", "prof": "오한솔", "credits": 3, "schedule": "화(2), 목(2)", "room": "교육관 201호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "동시대 미국 희곡을 읽는 특수과제. 영어 원문 읽기 전제, 출석 비중과 무단결석 패널티가 큰 편.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "출석 + 퀴즈/과제 추정", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "엄격", "style": "희곡 읽기 중심", "pros": "동시대 미국 희곡을 접할 수 있음.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "희곡", "원문읽기"]}, {"code": "ENGL425", "name": "응용언어학특수과제(영강) DL", "prof": "조민영", "credits": 3, "schedule": "수(6-8), 금(1-2)", "room": "서관 B110호", "field": "응용언어학", "basis": "강의계획서", "review_confidence": "low", "summary": "Discourse Analysis를 다루는 유연학기제 집중수업. 8주 집중 운영.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "출석/참여 비중 포함", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "중요", "style": "담화분석 입문", "pros": "짧은 기간 집중형 수업.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "유연학기제", "담화분석"]}, {"code": "ENGL426", "name": "영문학과법", "prof": "정원선", "credits": 3, "schedule": "금(1-2)", "room": "서관 307호", "field": "영미문학/융합", "basis": "강의계획서", "review_confidence": "low", "summary": "법과 문학의 접점을 탐구하는 융합 과목. 폭넓은 텍스트를 읽고 강의식 수업으로 진행.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "정보 부족", "exam_diff": "정보 부족", "presentation": "정보 부족", "team": "정보 부족", "attendance": "정보 부족", "style": "법·문학 융합", "pros": "주제가 독창적이고 융합적임.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "융합과목", "법과문학"]}, {"code": "ENGL429", "name": "최근영미문학(영강)", "prof": "안선영", "credits": 3, "schedule": "월(2), 수(2)", "room": "서관 B110호", "field": "영미문학", "basis": "강의계획서", "review_confidence": "low", "summary": "21세기 최근 영미소설을 읽는 과목. 거의 매시간 퀴즈가 있어 읽기 꾸준함이 중요.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "퀴즈 중심 + 중간/기말 짧은 에세이", "exam_diff": "정보 부족", "presentation": "낮음", "team": "낮음", "attendance": "공식 비중 낮음, 실질 출석 필요", "style": "최근소설 읽기", "pros": "최근 영미문학을 다룬다는 점이 매력적.", "cons": "후기 데이터 부족. 퀴즈 비중이 높음.", "tags": ["강의평부족", "퀴즈많음", "최근문학"]}, {"code": "ENGL433", "name": "영어교과교재연구및지도법(영강)", "prof": "정가영", "credits": 2, "schedule": "화(3), 목(3)", "room": "서관 223호", "field": "영어교육", "basis": "강의계획서", "review_confidence": "low", "summary": "영어교육 이론, 수업안 설계, 교재 분석과 개발을 다루는 과목. final project 비중이 높다.", "difficulty": "정보 보강 필요", "workload": "강의계획서 기반", "exam": "중간퀴즈 + final project", "exam_diff": "정보 부족", "presentation": "있음", "team": "마이크로티칭 포함", "attendance": "엄격", "style": "교재개발·수업설계 중심", "pros": "영어교사 진로에 직접적 도움이 됨.", "cons": "후기 데이터 부족.", "tags": ["강의평부족", "영어교육", "마이크로티칭"]}];
+const gateView = document.getElementById('gateView');
+const appView = document.getElementById('appView');
+const navBtns = document.querySelectorAll('.nav-btn');
+const pages = document.querySelectorAll('.page');
+const studentDisplay = document.getElementById('studentDisplay');
+let currentStudentId = localStorage.getItem('eng_major_current_student') || '';
+let currentCombos = [];
+let activeSwapContext = null;
+
+function showPage(id){
+  pages.forEach(page => page.classList.toggle('active', page.id === id));
+  navBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.page === id));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function getStudentKey(suffix){ return `eng_major_${currentStudentId}_${suffix}`; }
+function enterStudent(id){
+  currentStudentId = id.trim();
+  localStorage.setItem('eng_major_current_student', currentStudentId);
+  studentDisplay.textContent = currentStudentId;
+  gateView.style.display = 'none';
+  appView.style.display = 'grid';
+  renderCourseOptions();
+  renderCatalog();
+  renderSavedCourses();
+  renderSavedPrefs();
+  renderResults();
+  showPage('home');
+}
+function goToGate(){
+  appView.style.display = 'none';
+  gateView.style.display = 'grid';
+  document.getElementById('studentIdInput').value = currentStudentId || '';
+}
+
+document.getElementById('enterBtn').addEventListener('click', ()=>{
+  const id = document.getElementById('studentIdInput').value.trim();
+  if(!id){ alert('학번을 입력해야 시작할 수 있어.'); return; }
+  enterStudent(id);
+});
+document.getElementById('studentIdInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('enterBtn').click(); });
+document.getElementById('changeStudentBtn').addEventListener('click', goToGate);
+navBtns.forEach(btn => btn.addEventListener('click', ()=> showPage(btn.dataset.page)));
+document.getElementById('startNow').addEventListener('click', ()=> showPage('survey'));
+document.getElementById('openResults').addEventListener('click', ()=> { renderResults(); showPage('results'); });
+
+function renderCourseOptions(){
+  const select = document.getElementById('courseSelect');
+  select.innerHTML = courseCatalog.map(c => `<option value="${c.code}">${c.name} · ${c.prof} · ${c.schedule}</option>`).join('');
+}
+
+function confidenceLabel(level){
+  if(level==='high') return '강의평 충분';
+  if(level==='medium') return '강의평 일부';
+  return '강의평 부족';
+}
+function renderCatalog(){
+  const field = document.getElementById('fieldFilter').value;
+  const conf = document.getElementById('confidenceFilter').value;
+  const area = document.getElementById('catalogList');
+  const filtered = courseCatalog.filter(c => (field === 'all' || c.field === field) && (conf === 'all' || c.review_confidence === conf));
+  if(!filtered.length){ area.innerHTML = '<div class="empty">조건에 맞는 과목이 없습니다.</div>'; return; }
+  area.innerHTML = filtered.map(c => `
+    <div class="catalog-item">
+      <div style="width:100%">
+        <h4>${c.name}</h4>
+        <p><strong>${c.code}</strong> · ${c.prof} · ${c.credits}학점 · ${c.schedule} · ${c.room}</p>
+        <div class="meta">
+          <span class="meta-badge">${c.field}</span>
+          <span class="meta-badge">${c.difficulty}</span>
+          <span class="meta-badge">${c.exam}</span>
+          <span class="meta-badge">${c.workload}</span>
+          <span class="meta-badge">발표 ${c.presentation}</span>
+          <span class="meta-badge">팀플 ${c.team}</span>
+          <span class="meta-badge ${c.review_confidence === 'low' ? 'status-low' : 'status-high'}">${confidenceLabel(c.review_confidence)}</span>
+        </div>
+        <p style="margin-top:12px"><strong>한줄평:</strong> ${c.summary}</p>
+        <div class="meta">${c.tags.map(tag => `<span class="tiny">${tag}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+}
+document.getElementById('fieldFilter').addEventListener('change', renderCatalog);
+document.getElementById('confidenceFilter').addEventListener('change', renderCatalog);
+
+function getSavedCourses(){ if(!currentStudentId) return []; return JSON.parse(localStorage.getItem(getStudentKey('saved_courses')) || '[]'); }
+function setSavedCourses(data){ localStorage.setItem(getStudentKey('saved_courses'), JSON.stringify(data)); }
+function renderSavedCourses(){
+  const area = document.getElementById('savedCoursesArea');
+  const courses = getSavedCourses();
+  if(!courses.length){ area.innerHTML = '<div class="empty">아직 저장된 수강 이력이 없습니다.</div>'; return; }
+  area.innerHTML = '<div class="saved-list">' + courses.map((course, index)=>`
+    <div class="saved-item">
+      <div><h4>${course.name}</h4><p>${course.code} · 이수 학기: ${course.semester}</p></div>
+      <button class="btn btn-danger delete-course" data-index="${index}" style="padding:10px 12px">삭제</button>
+    </div>`).join('') + '</div>';
+  document.querySelectorAll('.delete-course').forEach(btn=>{ btn.addEventListener('click', ()=>{ const updated = getSavedCourses().filter((_, idx)=> idx !== Number(btn.dataset.index)); setSavedCourses(updated); renderSavedCourses(); renderResults(); }); });
+}
+document.getElementById('addCourseBtn').addEventListener('click', ()=>{
+  const code = document.getElementById('courseSelect').value;
+  const semester = document.getElementById('semesterSelect').value;
+  const found = courseCatalog.find(c => c.code === code);
+  const current = getSavedCourses();
+  if(current.some(item => item.code === code)){ alert('이미 저장된 과목이야.'); return; }
+  current.push({ code: found.code, name: found.name, semester });
+  setSavedCourses(current);
+  renderSavedCourses();
+  renderResults();
+});
+
+function getCheckedValues(name){ return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el=>el.value); }
+function collectPrefs(){
+  return {
+    credits: Number(document.querySelector('input[name="credits"]:checked')?.value || 9),
+    grade: document.querySelector('input[name="grade"]:checked')?.value || '-',
+    interests: getCheckedValues('interest'),
+    avoid: getCheckedValues('avoid'),
+    prefer: getCheckedValues('prefer'),
+    time: document.querySelector('input[name="time"]:checked')?.value || '-',
+    goal: document.querySelector('input[name="goal"]:checked')?.value || '-',
+    difficulty: document.querySelector('input[name="difficulty"]:checked')?.value || '-'
+  };
+}
+function savePreferences(){
+  if(!currentStudentId){ alert('먼저 학번을 입력해.'); return null; }
+  const prefs = collectPrefs();
+  localStorage.setItem(getStudentKey('saved_prefs'), JSON.stringify(prefs));
+  renderSavedPrefs();
+  return prefs;
+}
+document.getElementById('savePreferenceBtn').addEventListener('click', ()=>{ savePreferences(); alert('현재 학번 기준으로 선호가 저장됐어.'); });
+function renderSavedPrefs(){
+  const prefs = JSON.parse(localStorage.getItem(getStudentKey('saved_prefs')) || '{}');
+  const area = document.getElementById('savedPrefsArea');
+  area.innerHTML = `
+    <div class="pref-row"><span>전공 학점</span><strong>${prefs.credits ? prefs.credits + '학점' : '-'}</strong></div>
+    <div class="pref-row"><span>학년</span><strong>${prefs.grade ? prefs.grade + '학년' : '-'}</strong></div>
+    <div class="pref-row"><span>관심 분야</span><strong>${prefs.interests?.length ? prefs.interests.join(', ') : '-'}</strong></div>
+    <div class="pref-row"><span>회피 스타일</span><strong>${prefs.avoid?.length ? prefs.avoid.join(', ') : '-'}</strong></div>
+    <div class="pref-row"><span>선호 스타일</span><strong>${prefs.prefer?.length ? prefs.prefer.join(', ') : '-'}</strong></div>
+    <div class="pref-row"><span>시간대</span><strong>${prefs.time || '-'}</strong></div>
+    <div class="pref-row"><span>학기 목표</span><strong>${prefs.goal || '-'}</strong></div>`;
+}
+
+function matchesAvoid(course, avoids){
+  let penalty = 0;
+  if(avoids.includes('발표') && (course.presentation.includes('많음') || course.presentation.includes('있음'))) penalty += 4;
+  if(avoids.includes('팀플') && !(course.team.includes('없음') || course.team.includes('거의 없음') || course.team.includes('낮음'))) penalty += 4;
+  if(avoids.includes('과제폭탄') && (course.workload.includes('많음') || course.workload.includes('높음'))) penalty += 4;
+  if(avoids.includes('시험어려움') && (course.exam_diff.includes('어려움') || course.exam_diff.includes('높음'))) penalty += 3;
+  return penalty;
+}
+function scoreCourse(course, prefs, completedCodes){
+  if(completedCodes.includes(course.code)) return -999;
+  let score = 50;
+  if(prefs.interests.some(i => course.field.includes(i))) score += 15;
+  if(prefs.goal === '널널하게' && (course.workload.includes('적음') || course.difficulty.includes('낮음') || course.difficulty.includes('보통'))) score += 8;
+  if(prefs.goal === '학점 방어' && course.tags.some(t => ['채점후함','학점잘줌','학점후함'].includes(t))) score += 10;
+  if(prefs.goal === '전공 심화' && (course.difficulty.includes('높음') || course.field.includes('비평이론') || course.field.includes('응용언어학'))) score += 8;
+  if(prefs.difficulty === 'easy' && (course.workload.includes('많음') || course.difficulty.includes('높음'))) score -= 10;
+  if(prefs.difficulty === 'hard' && course.difficulty.includes('높음')) score += 8;
+  if(prefs.difficulty === 'challenge' && (course.difficulty.includes('높음') || course.exam_diff.includes('어려움'))) score += 10;
+  score -= matchesAvoid(course, prefs.avoid);
+  if(prefs.prefer.includes('설명 체계적') && (course.pros.includes('강의력') || course.tags.includes('강의력좋음'))) score += 5;
+  if(prefs.prefer.includes('시험형') && (course.exam.includes('기말') || course.exam.includes('중간/기말'))) score += 3;
+  if(prefs.prefer.includes('과제형') && (course.workload.includes('보통') || course.workload.includes('많음'))) score += 2;
+  if(prefs.prefer.includes('실용성') && (course.field.includes('영어교육') || course.field.includes('융합') || course.tags.includes('AI'))) score += 6;
+  if(course.review_confidence === 'high') score += 3;
+  if(course.review_confidence === 'low') score -= 1;
+  return score;
+}
+function combinations(arr, k){
+  const result = [];
+  function helper(start, combo){
+    if(combo.length === k){ result.push([...combo]); return; }
+    for(let i = start; i < arr.length; i++){ combo.push(arr[i]); helper(i+1, combo); combo.pop(); }
+  }
+  helper(0, []);
+  return result;
+}
+function recommendCombos(prefs){
+  const completedCodes = getSavedCourses().map(c => c.code);
+  const eligible = courseCatalog.filter(c => scoreCourse(c, prefs, completedCodes) > -900 && c.credits > 0);
+  const targetCredits = prefs.credits;
+  const possibleCounts = [1,2,3,4];
+  let combos = [];
+  possibleCounts.forEach(k => {
+    combinations(eligible, k).forEach(combo => {
+      const total = combo.reduce((s, c) => s + c.credits, 0);
+      if(total === targetCredits){
+        let totalScore = combo.reduce((s, c) => s + scoreCourse(c, prefs, completedCodes), 0);
+        totalScore += Math.min(new Set(combo.map(c => c.field)).size, 3);
+        combos.push({courses: combo, totalCredits: total, score: totalScore});
+      }
+    });
+  });
+  if(!combos.length){
+    combinations(eligible, 3).forEach(combo => {
+      const total = combo.reduce((s, c) => s + c.credits, 0);
+      const creditPenalty = Math.abs(total - targetCredits) * 8;
+      let totalScore = combo.reduce((s, c) => s + scoreCourse(c, prefs, completedCodes), 0) - creditPenalty;
+      combos.push({courses: combo, totalCredits: total, score: totalScore});
+    });
+  }
+  combos.sort((a,b) => b.score - a.score);
+  const unique = [];
+  const seen = new Set();
+  for(const combo of combos){
+    const key = combo.courses.map(c => c.code).sort().join('|');
+    if(!seen.has(key)){ seen.add(key); unique.push(combo); }
+    if(unique.length >= 3) break;
+  }
+  return unique;
+}
+function comboTitle(index){
+  const titles = ['추천 조합 A · 가장 안정적','추천 조합 B · 관심 분야 중심','추천 조합 C · 대안 조합'];
+  return titles[index] || ('추천 조합 ' + (index + 1));
+}
+
+function getPrefsForResults(){
+  return JSON.parse(localStorage.getItem(getStudentKey('saved_prefs')) || 'null') || collectPrefs();
+}
+
+function renderResults(){
+  const prefs = getPrefsForResults();
+  currentCombos = recommendCombos(prefs);
+  activeSwapContext = null;
+  document.getElementById('swapStatus').textContent = '먼저 추천 결과에서 교체할 과목을 골라줘.';
+  document.getElementById('swapList').innerHTML = '';
+  const resultPrefs = document.getElementById('resultPrefs');
+  const recommendationList = document.getElementById('recommendationList');
+
+  resultPrefs.innerHTML = `
+    <div class="pref-row"><span>목표 전공 학점</span><strong>${prefs.credits}학점</strong></div>
+    <div class="pref-row"><span>관심 분야</span><strong>${prefs.interests.length ? prefs.interests.join(', ') : '선택 없음'}</strong></div>
+    <div class="pref-row"><span>회피 스타일</span><strong>${prefs.avoid.length ? prefs.avoid.join(', ') : '없음'}</strong></div>
+    <div class="pref-row"><span>선호 스타일</span><strong>${prefs.prefer.length ? prefs.prefer.join(', ') : '없음'}</strong></div>
+    <div class="pref-row"><span>학기 목표</span><strong>${prefs.goal}</strong></div>
+    <div class="pref-row"><span>난이도</span><strong>${prefs.difficulty}</strong></div>`;
+
+  if(!currentCombos.length){
+    recommendationList.innerHTML = '<div class="empty">추천 가능한 조합이 아직 없습니다. 설문을 다시 조정하거나 마이페이지의 수강 이력을 확인해봐.</div>';
+    return;
+  }
+
+  recommendationList.innerHTML = currentCombos.map((combo, idx) => {
+    const allTags = [...new Set(combo.courses.flatMap(c => c.tags.slice(0,2)))].slice(0,5);
+    const reasons = [];
+    if(prefs.interests.length && combo.courses.some(c => prefs.interests.some(i => c.field.includes(i)))) reasons.push('관심 분야 반영');
+    if(prefs.avoid.length && combo.courses.every(c => matchesAvoid(c, prefs.avoid) < 4)) reasons.push('회피 스타일 반영');
+    if(combo.totalCredits === prefs.credits) reasons.push('학점 정확히 충족');
+    return `
+      <div class="combo-card">
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+            <div>
+              <h4>${comboTitle(idx)}</h4>
+              <p>총 ${combo.totalCredits}학점 · 과목 ${combo.courses.length}개</p>
+            </div>
+            <span class="combo-score">추천 점수 ${Math.round(combo.score)}</span>
+          </div>
+          <div class="meta">${reasons.map(r => `<span class="meta-badge">${r}</span>`).join('')}${allTags.map(t => `<span class="meta-badge">${t}</span>`).join('')}</div>
+          <div class="combo-courses">
+            ${combo.courses.map(c => `
+              <div class="course-line">
+                <strong>${c.name}</strong><br>
+                <span style="color:var(--muted)">${c.prof} · ${c.credits}학점 · ${c.schedule} · ${c.field}</span>
+                <div class="meta">
+                  <span class="meta-badge">${c.workload}</span>
+                  <span class="meta-badge">${c.exam}</span>
+                  <span class="meta-badge">발표 ${c.presentation}</span>
+                  <span class="meta-badge">팀플 ${c.team}</span>
+                </div>
+                <p style="margin-top:8px">${c.summary}</p>
+                <div class="swap-inline">
+                  <button class="btn btn-ghost swap-trigger" data-combo="${idx}" data-course="${c.code}" style="padding:10px 12px">이 과목 교체</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.querySelectorAll('.swap-trigger').forEach(btn => {
+    btn.addEventListener('click', () => openSwapPanel(Number(btn.dataset.combo), btn.dataset.course));
+  });
+}
+
+function similarityScore(base, candidate){
+  let s = 0;
+  if(base.credits === candidate.credits) s += 10;
+  if(base.field === candidate.field) s += 8;
+  else if(base.field.split('/')[0] === candidate.field.split('/')[0]) s += 4;
+  if(base.workload === candidate.workload) s += 3;
+  if(base.presentation === candidate.presentation) s += 3;
+  if(base.team === candidate.team) s += 3;
+  if(base.difficulty === candidate.difficulty) s += 2;
+  return s;
+}
+
+function openSwapPanel(comboIndex, courseCode){
+  const combo = currentCombos[comboIndex];
+  if(!combo) return;
+  const base = combo.courses.find(c => c.code === courseCode);
+  if(!base) return;
+  activeSwapContext = {comboIndex, courseCode};
+  document.getElementById('swapStatus').textContent = `${comboTitle(comboIndex)}에서 "${base.name}"을(를) 교체할 후보`;
+  const excludedCodes = new Set(combo.courses.map(c => c.code));
+  const completedCodes = new Set(getSavedCourses().map(c => c.code));
+
+  const candidates = courseCatalog
+    .filter(c => c.code !== base.code && c.credits === base.credits && !excludedCodes.has(c.code) && !completedCodes.has(c.code))
+    .map(c => ({course: c, score: similarityScore(base, c)}))
+    .sort((a,b) => b.score - a.score)
+    .slice(0,5);
+
+  const swapList = document.getElementById('swapList');
+  if(!candidates.length){
+    swapList.innerHTML = '<div class="empty">교체할 만한 후보가 없습니다. 다른 과목을 골라봐.</div>';
+    return;
+  }
+
+  swapList.innerHTML = candidates.map(item => {
+    const c = item.course;
+    return `
+      <div class="swap-card">
+        <div style="width:100%">
+          <h4>${c.name}</h4>
+          <p><strong>${c.code}</strong> · ${c.prof} · ${c.credits}학점 · ${c.schedule}</p>
+          <div class="meta">
+            <span class="meta-badge">${c.field}</span>
+            <span class="meta-badge">${c.workload}</span>
+            <span class="meta-badge">${c.exam}</span>
+            <span class="meta-badge">발표 ${c.presentation}</span>
+            <span class="meta-badge">팀플 ${c.team}</span>
+          </div>
+          <p style="margin-top:10px">${c.summary}</p>
+          <div class="button-row">
+            <button class="btn btn-primary apply-swap" data-code="${c.code}" style="padding:10px 12px">이 과목으로 교체</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.querySelectorAll('.apply-swap').forEach(btn => {
+    btn.addEventListener('click', () => applySwap(btn.dataset.code));
+  });
+}
+
+function applySwap(newCode){
+  if(!activeSwapContext) return;
+  const {comboIndex, courseCode} = activeSwapContext;
+  const combo = currentCombos[comboIndex];
+  const replacement = courseCatalog.find(c => c.code === newCode);
+  if(!combo || !replacement) return;
+
+  combo.courses = combo.courses.map(c => c.code === courseCode ? replacement : c);
+  combo.score = combo.courses.reduce((s,c)=> s + 50, 0); // simple refresh marker
+  document.getElementById('swapStatus').textContent = '교체 완료. 추천 결과가 업데이트됐다.';
+  document.getElementById('swapList').innerHTML = '';
+  renderResultsWithExistingCombos();
+}
+
+function renderResultsWithExistingCombos(){
+  const prefs = getPrefsForResults();
+  const recommendationList = document.getElementById('recommendationList');
+  recommendationList.innerHTML = currentCombos.map((combo, idx) => {
+    const allTags = [...new Set(combo.courses.flatMap(c => c.tags.slice(0,2)))].slice(0,5);
+    const reasons = [];
+    if(prefs.interests.length && combo.courses.some(c => prefs.interests.some(i => c.field.includes(i)))) reasons.push('관심 분야 반영');
+    if(combo.totalCredits === prefs.credits) reasons.push('학점 충족');
+    return `
+      <div class="combo-card">
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+            <div>
+              <h4>${comboTitle(idx)}</h4>
+              <p>총 ${combo.totalCredits}학점 · 과목 ${combo.courses.length}개</p>
+            </div>
+            <span class="combo-score">교체 반영됨</span>
+          </div>
+          <div class="meta">${reasons.map(r => `<span class="meta-badge">${r}</span>`).join('')}${allTags.map(t => `<span class="meta-badge">${t}</span>`).join('')}</div>
+          <div class="combo-courses">
+            ${combo.courses.map(c => `
+              <div class="course-line">
+                <strong>${c.name}</strong><br>
+                <span style="color:var(--muted)">${c.prof} · ${c.credits}학점 · ${c.schedule} · ${c.field}</span>
+                <div class="meta">
+                  <span class="meta-badge">${c.workload}</span>
+                  <span class="meta-badge">${c.exam}</span>
+                  <span class="meta-badge">발표 ${c.presentation}</span>
+                  <span class="meta-badge">팀플 ${c.team}</span>
+                </div>
+                <p style="margin-top:8px">${c.summary}</p>
+                <div class="swap-inline">
+                  <button class="btn btn-ghost swap-trigger" data-combo="${idx}" data-course="${c.code}" style="padding:10px 12px">이 과목 교체</button>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.querySelectorAll('.swap-trigger').forEach(btn => {
+    btn.addEventListener('click', () => openSwapPanel(Number(btn.dataset.combo), btn.dataset.course));
+  });
+}
+
+document.getElementById('generateRecommendationsBtn').addEventListener('click', ()=>{
+  savePreferences();
+  renderResults();
+  showPage('results');
+});
+
+if(currentStudentId){ enterStudent(currentStudentId); } else { goToGate(); }
+</script>
+</body>
+</html>
